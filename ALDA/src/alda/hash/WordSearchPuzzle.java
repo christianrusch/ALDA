@@ -14,7 +14,7 @@ import java.util.List;
 
 public class WordSearchPuzzle {
 	
-	HashMap<String, Object> dictionary = new HashMap<String, Object>();
+	MyHashMap<String, Object> dictionary = new MyHashMap<String, Object>(4);
 	char[][] grid;
 	
 	private static final int MINIMUM_WORDLENGTH = 4;
@@ -43,16 +43,17 @@ public class WordSearchPuzzle {
 		
 		public String toString() {
 			return word +
-					" (" + String.valueOf(startCoordinate[0]) + ":" + String.valueOf(startCoordinate[1]) +
-					") - (" + String.valueOf(endCoordinate[0]) + ":" + String.valueOf(endCoordinate[1]) + ")";
+					" (" + String.valueOf(startCoordinate[0]) + ":" + String.valueOf(startCoordinate[1]) + ") -" +
+					" (" + String.valueOf(endCoordinate[0]) + ":" + String.valueOf(endCoordinate[1]) + ")";
 		}
 		
 	}
 
 	/**
 	 * Loads a dictionary file to a HashMap for quick access.
+	 * @param filename The path to the file containing the dictionary entries.
 	 */
-	private HashMap<String, Object> loadDictionary(String filename) {
+	private MyHashMap<String, Object> loadDictionaryFromFile(String filename) {
 		try {
 			FileReader dictionaryFile = new FileReader(filename);
 			BufferedReader inputBuffer = new BufferedReader(dictionaryFile);
@@ -71,9 +72,7 @@ public class WordSearchPuzzle {
 	/**
 	 * Loads a text file containing a the strings for the grid,
 	 * with each row in the grid delimited by a row break.
-	 * 
 	 * @param filename The path to the text file containing the grid data.
-	 * @param gridLines An ArrayList<String> containing each grid row.
 	 */
 	private void loadGrid(String filename) {
 		
@@ -232,11 +231,14 @@ public class WordSearchPuzzle {
         }
 		return foundWords;
 	}
+	
 	/**
-	 * 
+	 * Help method to load a predefined dictionary and grid
+	 * for demo purposes, and then to process the grid against
+	 * the dictionary.
 	 */
 	private void initShit() {
-		loadDictionary("./src/alda/hash/mywordlistfile.txt");
+		loadDictionaryFromFile("./src/alda/hash/mywordlistfile.txt");
 		loadGrid("./src/alda/hash/mygridfile.txt");
 //		printDictionary();
 		printGrid();
@@ -245,7 +247,9 @@ public class WordSearchPuzzle {
 	}
 	
 	/**
-	 * 
+	 * Cycles through the key set of the dictionary (in the
+	 * default case, just under 236000 words) and prints them
+	 * to the stream; ends with an additional row break.
 	 */
 	private void printDictionary() {
 		for(String s : dictionary.keySet()) {
@@ -255,7 +259,9 @@ public class WordSearchPuzzle {
 	}
 	
 	/**
-	 * 
+	 * Loops through each row in the grid and prints
+	 * each character (and a white space), until the grid
+	 * has been completed.
 	 */
 	private void printGrid() {
 		for(int i = 0; i < grid.length; i++) {
@@ -271,20 +277,19 @@ public class WordSearchPuzzle {
 	 * 
 	 * @param foundWords
 	 */
-    private void printSolutions(List<Word> foundWords) {
-
-    	Collections.sort(foundWords, new Comparator<Word>() {
-    		@Override
-    		public int compare(Word word1, Word word2) {
-    			return word1.getWord().compareTo(word2.getWord());
-    		}
-    	});
-    	System.out.println("Found " + foundWords.size() + " words:");
-    	System.out.println("============================");
-    	for(Word w: foundWords) {
-    		System.out.println(w.toString());
-    	}
-    }
+	private void printSolutions(List<Word> foundWords) {
+	
+		Collections.sort(foundWords, new Comparator<Word>() {
+			public int compare(Word thisWord, Word thatWord) {
+				return thisWord.getWord().compareTo(thatWord.getWord());
+			}
+		});
+		System.out.println("Found " + foundWords.size() + " words:");
+		System.out.println("============================");
+		for(Word w: foundWords) {
+			System.out.println(w.toString());
+		}
+	}
 	
 	public static void main(String args[]) {
 		WordSearchPuzzle wsp = new WordSearchPuzzle();
